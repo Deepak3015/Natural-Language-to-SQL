@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
 import google.generativeai as genai
+import re
 
 load_dotenv()
 
@@ -18,9 +19,10 @@ def generate_sql(prompt):
 
 def clean_sql(sql):
 
-    sql = sql.replace(
-        "```sql",
-        ""
+    sql = re.sub(
+        r"```.*?\n",
+        "",
+        sql
     )
 
     sql = sql.replace(
