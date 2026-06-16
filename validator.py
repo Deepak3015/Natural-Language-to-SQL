@@ -1,5 +1,6 @@
-def check_validation(query):
-    restrict_word = [
+def check_validation(sql):
+
+    dangerous_keywords = [
         "DROP",
         "DELETE",
         "UPDATE",
@@ -7,12 +8,15 @@ def check_validation(query):
         "ALTER",
         "TRUNCATE"
     ]
-    query_upper = query.upper()
 
-    for keyword in restrict_word :
-        if keyword in query_upper:
-            raise  ValueError(f"{keyword} queries are not allowed.")
-    
+    sql_upper = sql.upper()
+
+    for keyword in dangerous_keywords:
+
+        if keyword in sql_upper:
+
+            raise Exception(
+                f"{keyword} statements are not allowed."
+            )
+
     return True
-
-
