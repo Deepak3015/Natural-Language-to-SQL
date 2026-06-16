@@ -11,8 +11,7 @@ def execute_query(query):
             with engine.connect() as connection:
 
                 print("Connected successfully!")
-                query =  text("Select * from customer")
-                result = connection.execute(query)
+                result = connection.execute(text(query))
                 rows = []
                 for row in result:
                     rows.append(dict(row._mapping))
