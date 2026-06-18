@@ -1,6 +1,7 @@
 import streamlit as st
 from sql_agent import ask_database
 
+
 st.set_page_config(
     page_title="SQLMind AI",
     page_icon="🤖",
@@ -11,34 +12,44 @@ st.title(
     "🤖 SQLMind AI"
 )
 
-user_prompt = st.text_input(
-    "Ask your database"
-)
-
 if st.button(
-    "Submit"
-) and user_prompt:
+    "Clear Chat"
+):
 
-    with st.spinner(
-        "Thinking..."
+    st.session_state.messages = []
+
+    st.rerun()
+
+
+
+
+if "messages" not in st.session_state:
+
+    st.session_state.messages = []
+
+
+
+
+for message in st.session_state.messages:
+
+    with st.chat_message(
+        message["role"]
     ):
 
-        try:
+        if message["role"] == "user":
 
-            sql_query, df = ask_database(
-                user_prompt
+            st.markdown(
+                message["content"]
             )
 
-            st.success(
-                "Query executed successfully!"
-            )
+        else:
 
             st.subheader(
                 "Generated SQL"
             )
 
             st.code(
-                sql_query,
+                message["sql"],
                 language="sql"
             )
 
@@ -47,12 +58,86 @@ if st.button(
             )
 
             st.dataframe(
-                df,
+                message["df"],
                 use_container_width=True
             )
 
-        except Exception as e:
 
-            st.error(
-                str(e)
-            )
+
+
+user_prompt = st.chat_input(
+    "Ask your database..."
+)
+
+
+
+
+if user_prompt:
+
+
+
+    st.session_state.messages.append(
+        {
+            "role": "user",
+            "content": user_prompt
+        }
+    )
+
+
+
+    with st.chat_message(
+        "user"
+    ):
+
+        st.markdown(
+            user_prompt
+        )
+
+
+
+    with st.chat_message(
+        "assistant"
+    ):
+
+        with st.spinner(
+            "Thinking..."
+        ):
+
+            try:
+
+                sql_query, df = ask_database(
+                    user_prompt
+                )
+
+                st.subheader(
+                    "Generated SQL"
+                )
+
+                st.code(
+                    sql_query,
+                    language="sql"
+                )
+
+                st.subheader(
+                    "Results"
+                )
+
+                st.dataframe(
+                    df,
+                    use_container_width=True
+                )
+
+
+                st.session_state.messages.append(
+                    {
+                        "role": "assistant",
+                        "sql": sql_query,
+                        "df": df
+                    }
+                )
+
+            except Exception as e:
+
+                st.error(
+                    str(e)
+                )
