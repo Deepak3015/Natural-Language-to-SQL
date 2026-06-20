@@ -1,6 +1,6 @@
 import streamlit as st
 from datetime import datetime
-
+from visualize import visualize
 from sql_agent import ask_database
 from schema_loader import get_schema
 
@@ -203,58 +203,7 @@ if user_prompt:
 
                 # Display Data
 
-                st.subheader(
-                    "Results"
-                )
-
-                st.dataframe(
-                    df,
-                    use_container_width=True
-                )
-
-
-                numeric_columns = df.select_dtypes(
-                    include="number"
-                ).columns
-
-                if len(
-                    numeric_columns
-                ) > 0:
-
-                    st.subheader(
-                        "📊 Visualization"
-                    )
-
-                    chart_type = st.selectbox(
-                        "Chart Type",
-                        [
-                            "Bar",
-                            "Line",
-                            "Area"
-                        ]
-                    )
-
-                    chart_df = df.set_index(
-                        df.columns[0]
-                    )
-
-                    if chart_type == "Bar":
-
-                        st.bar_chart(
-                            chart_df
-                        )
-
-                    elif chart_type == "Line":
-
-                        st.line_chart(
-                            chart_df
-                        )
-
-                    else:
-
-                        st.area_chart(
-                            chart_df
-                        )
+                visualize(df)
 
                 # Store Assistant Message
 
